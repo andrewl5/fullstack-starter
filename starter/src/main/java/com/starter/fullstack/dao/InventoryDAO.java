@@ -52,7 +52,12 @@ public class InventoryDAO {
    */
   public Inventory create(Inventory inventory) {
     // TODO
-    return null;
+
+    //Takes in the given inventory object and using .insert(), inserts the object into the inventory collection.
+    //mongoTemplate is a wrapper ontop of mongoDB.
+    //Can use this.mongoTemplate to reference the collection inside the database?
+    return this.mongoTemplate.insert(inventory);
+
   }
 
   /**
@@ -83,6 +88,8 @@ public class InventoryDAO {
    */
   public Optional<Inventory> delete(String id) {
     // TODO
+
+
     return Optional.empty();
   }
 }
