@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -79,5 +80,15 @@ public class InventoryControllerTest {
             .content(this.objectMapper.writeValueAsString(this.inventory)))
             .andExpect(status().isOk());
     Assert.assertEquals(2, this.mongoTemplate.findAll(Inventory.class).size());
+  }
+
+  @Test
+  public void remove() throws Throwable {
+    this.mockMvc.perform(delete("/inventory")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(this.inventory.getId()))
+            .andExpect(status().isOk());
+    Assert.assertEquals(0, this.mongoTemplate.findAll(Inventory.class).size());
   }
 }
