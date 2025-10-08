@@ -20,8 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
@@ -37,6 +35,9 @@ public class InventoryControllerTest {
   private ObjectMapper objectMapper;
 
   private Inventory inventory;
+
+  private static final String TEST_ID = "TEST_ID";
+  private static final String NAME_ID = "NAME_ID";
 
   @Before
   public void setup() throws Throwable {
@@ -69,12 +70,9 @@ public class InventoryControllerTest {
   @Test
   public void create() throws Throwable {
 
-    var testId = "TEST ID";
-    var testName = "Squilliam Fancyson";
-
     this.inventory = new Inventory();
-    this.inventory.setId(testId);
-    this.inventory.setName(testName);
+    this.inventory.setId(TEST_ID);
+    this.inventory.setName(NAME_ID);
     this.mockMvc.perform(post("/inventory")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)

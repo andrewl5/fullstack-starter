@@ -2,6 +2,7 @@ package com.starter.fullstack.dao;
 
 import com.starter.fullstack.api.Inventory;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ public class InventoryDAOTest {
   private InventoryDAO inventoryDAO;
   private static final String NAME = "Amber";
   private static final String PRODUCT_TYPE = "hops";
+  private static final String TEST_ID = "ID";
 
   //What happens before running the unit test. Creates an empty collection inside the database.
   @Before
@@ -78,4 +80,19 @@ public class InventoryDAOTest {
     Assert.assertEquals(1, actualInventory.size());
   }
 
+  @Test
+  public void delete() {
+
+    //Setup for test
+
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    inventory.setId(TEST_ID);
+    this.mongoTemplate.save(inventory);
+    this.inventoryDAO.delete(TEST_ID);
+    List<Inventory> actualInventory = this.inventoryDAO.findAll();
+    Assert.assertTrue(actualInventory.isEmpty());
+
+  }
 }
