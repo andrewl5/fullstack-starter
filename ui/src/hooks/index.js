@@ -27,7 +27,7 @@ const usePrevious = (value) => {
  * For use when you need to load initial data
  * @param func
  */
-export const useMountEffect = (func) => { useEffect(func, []) }
+export const useMountEffect = (func) => { useEffect(func, [func]) }
 
 /**
  * Toggle Dark Mode
