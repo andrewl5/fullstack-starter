@@ -45,7 +45,7 @@ class InventoryFormModal extends React.Component {
             handleDialog(true)
             handleInventory(modifiedVals)
           }}>
-          {helpers =>
+          { helpers =>
             <Form
               noValidate
               autoComplete='off'
@@ -156,7 +156,6 @@ class InventoryFormModal extends React.Component {
             </Form>
           }
         </Formik>
-
       </Dialog>
     )
   }
