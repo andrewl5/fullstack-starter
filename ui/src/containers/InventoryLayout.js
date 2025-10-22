@@ -2,6 +2,7 @@ import * as inventoryDuck from '../ducks/inventory'
 import * as productDuck from '../ducks/products'
 import Checkbox from '@material-ui/core/Checkbox'
 import Grid from '@material-ui/core/Grid'
+import InventoryDeleteModal from '../components/Inventory/InventoryDeleteModal'
 import InventoryFormModal from '../components/Inventory/InventoryFormModal'
 import { makeStyles } from '@material-ui/core/styles'
 import { MeasurementUnits } from '../constants/units'
@@ -51,6 +52,7 @@ const InventoryLayout = (props) => {
   const products = useSelector(state => state.products.all)
   const isFetched = useSelector(state => state.inventory.fetched && state.products.fetched)
   const saveInventory = useCallback(inventory => { dispatch(inventoryDuck.saveInventory(inventory)) }, [dispatch])
+  const removeInventory = useCallback(ids => { dispatch(inventoryDuck.removeDelete(ids)) }, [dispatch])
 
   useEffect(() => {
     if (!isFetched) {
@@ -65,31 +67,23 @@ const InventoryLayout = (props) => {
   const [selected, setSelected] = React.useState([])
 
   const [isCreateOpen, setCreateOpen] = React.useState(false)
+  const [isDeleteOpen, setDeleteOpen] = React.useState(false)
 
   const toggleCreate = () => {
     setCreateOpen(true)
   }
 
+  const toggleDelete = () => {
+    setDeleteOpen(true)
+  }
+
   const toggleModals = (resetChecked) => {
     setCreateOpen(false)
+    setDeleteOpen(false)
     if (resetChecked) {
-      setChecked([])
+      setSelected([])
     }
   }
-
-  const [checked, setChecked] = React.useState([])
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value)
-    const newChecked = [...checked]
-
-    if (currentIndex === -1) {
-      newChecked.push(value)
-    } else {
-      newChecked.splice(currentIndex, 1)
-    }
-    setChecked(newChecked)
-  }
-
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -106,13 +100,13 @@ const InventoryLayout = (props) => {
     setSelected([])
   }
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id)
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name)
     let newSelected = []
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id)
+      newSelected = newSelected.concat(selected, name)
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
+      newSelected = newSelected.concat(selected.slice(2))
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1))
     } else if (selectedIndex > 0) {
@@ -133,6 +127,7 @@ const InventoryLayout = (props) => {
           numSelected={selected.length}
           title='Inventory'
           toggleCreate={toggleCreate}
+          toggleDelete={toggleDelete}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -194,6 +189,13 @@ const InventoryLayout = (props) => {
             }}
           productList={products}
           measurements={MeasurementUnits}
+        />
+        {/*initialValues={checked.map(check => check.id)}*/}
+        <InventoryDeleteModal
+          isDialogOpen={isDeleteOpen}
+          handleDelete={removeInventory}
+          handleDialog={toggleModals}
+          initialValues={selected}
         />
       </Grid>
     </Grid>
