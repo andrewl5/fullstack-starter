@@ -79,8 +79,9 @@ public class InventoryDAO {
    * @return Updated Inventory.
    */
   public Optional<Inventory> update(String id, Inventory inventory) {
-    // TODO
-    return Optional.empty();
+    Query query = new Query(Criteria.where(QUERY).is(id));
+    this.mongoTemplate.findAndReplace(query, inventory);
+    return Optional.of(inventory);
   }
 
   /**
@@ -92,6 +93,7 @@ public class InventoryDAO {
 
     Query query = new Query(Criteria.where(QUERY).is(id));
     return Optional.ofNullable(this.mongoTemplate.findAndRemove(query, Inventory.class));
+
 
   }
 }

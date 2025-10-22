@@ -6,6 +6,7 @@ const actions = {
   INVENTORY_GET_ALL_PENDING: 'inventory/get_all_PENDING',
   INVENTORY_SAVE: 'inventory/save',
   INVENTORY_DELETE: 'inventory/delete',
+  INVENTORY_UPDATE: 'inventory/update',
   INVENTORY_REFRESH: 'inventory/refresh'
 }
 
@@ -20,7 +21,6 @@ export const findInventory = createAction(actions.INVENTORY_GET_ALL, () =>
     .get(`${config.restAPIUrl}/inventory`)
     .then((suc) => dispatch(refreshInventory(suc.data)))
 )
-
 
 export const saveInventory = createAction(actions.INVENTORY_SAVE, (inventory) =>
   (dispatch, getState, config) => axios
@@ -51,6 +51,20 @@ export const removeDelete = createAction(actions.INVENTORY_DELETE, (ids) =>
     })
 )
 
+export const updateInventory = createAction(actions.INVENTORY_UPDATE, (inventory) =>
+  (dispatch, getState, config) => axios
+    .put(`${config.restAPIUrl}/inventory`, inventory)
+    .then((suc) => {
+      const invs = []
+      getState().inventory.all.forEach(inv => {
+        if (inv.id !== suc.data.id) {
+          invs.push(inv)
+        }
+      })
+      invs.push(suc.data)
+      dispatch(refreshInventory(invs))
+    })
+)
 
 export const refreshInventory = createAction(actions.INVENTORY_REFRESH, (payload) =>
   (dispatcher, getState, config) =>

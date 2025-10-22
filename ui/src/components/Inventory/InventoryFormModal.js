@@ -20,14 +20,14 @@ class InventoryFormModal extends React.Component {
       handleInventory,
       initialValues,
       productList,
-      measurements,
+      measurements
     } = this.props
     const formSchema = object({
       name: string().required(),
       productType: string().required(),
       unitOfMeasurement: string().required(),
-      averagePrice: number(),
-      amount: number()
+      averagePrice: number().min(0),
+      amount: number().min(0)
     })
     return (
       <Dialog
@@ -117,8 +117,8 @@ class InventoryFormModal extends React.Component {
                       {Object.keys(measurements).map((key) => {
                         const enumValue = measurements[key]
                         return (
-                          <MenuItem key={key} value={key}>
-                            {enumValue.abbreviation}
+                          <MenuItem value={key}>
+                            {enumValue.abbreviation} / {key}
                           </MenuItem>
                         )
                       })}

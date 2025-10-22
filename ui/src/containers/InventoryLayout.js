@@ -53,6 +53,7 @@ const InventoryLayout = (props) => {
   const isFetched = useSelector(state => state.inventory.fetched && state.products.fetched)
   const saveInventory = useCallback(inventory => { dispatch(inventoryDuck.saveInventory(inventory)) }, [dispatch])
   const removeInventory = useCallback(ids => { dispatch(inventoryDuck.removeDelete(ids)) }, [dispatch])
+  const editInventory = useCallback(inventory => { dispatch(inventoryDuck.updateInventory(inventory)) }, [dispatch])
 
   useEffect(() => {
     if (!isFetched) {
@@ -65,9 +66,11 @@ const InventoryLayout = (props) => {
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('calories')
   const [selected, setSelected] = React.useState([])
+  const [singleSelected, setSingleSelected] = React.useState('')
 
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [isDeleteOpen, setDeleteOpen] = React.useState(false)
+  const [isEditOpen, setEditOpen] = React.useState(false)
 
   const toggleCreate = () => {
     setCreateOpen(true)
@@ -77,11 +80,24 @@ const InventoryLayout = (props) => {
     setDeleteOpen(true)
   }
 
+  const toggleEdit = () => {
+    setEditOpen(true)
+  }
+
   const toggleModals = (resetChecked) => {
     setCreateOpen(false)
     setDeleteOpen(false)
+    setEditOpen(false)
     if (resetChecked) {
       setSelected([])
+    }
+  }
+
+  const findInv = (id) => {
+    for (let inv = 0; inv < inventory.length; inv++){
+      if (inventory[inv].id === id){
+        setSingleSelected(inventory[inv])
+      }
     }
   }
 
@@ -100,7 +116,7 @@ const InventoryLayout = (props) => {
     setSelected([])
   }
 
-  const handleClick = (event, id) => {
+  const handleClick = (event, id, inv) => {
     const selectedIndex = selected.indexOf(id)
     let newSelected = []
     if (selectedIndex === -1) {
@@ -116,6 +132,9 @@ const InventoryLayout = (props) => {
       )
     }
     setSelected(newSelected)
+    if (newSelected.length === 1){
+      findInv(newSelected[0])
+    }
   }
 
   const isSelected = (id) => selected.indexOf(id) !== -1
@@ -128,6 +147,7 @@ const InventoryLayout = (props) => {
           title='Inventory'
           toggleCreate={toggleCreate}
           toggleDelete={toggleDelete}
+          toggleEdit={toggleEdit}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -148,7 +168,7 @@ const InventoryLayout = (props) => {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, inv.id)}
+                      onClick={(event) => handleClick(event, inv.id, inv)}
                       role='checkbox'
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -195,6 +215,26 @@ const InventoryLayout = (props) => {
           handleDelete={removeInventory}
           handleDialog={toggleModals}
           initialValues={selected}
+        />
+        <InventoryFormModal
+          title='Edit'
+          formName='inventoryEdit'
+          isDialogOpen={isEditOpen}
+          handleDialog={toggleModals}
+          handleInventory={editInventory}
+          initialValues={{
+            description: singleSelected.description,
+            averagePrice: singleSelected.averagePrice,
+            amount: singleSelected.amount,
+            productType: singleSelected.productType,
+            bestBeforeDate: moment(singleSelected.bestBeforeDate).format('YYYY-MM-DD'),
+            neverExpires: singleSelected.neverExpires,
+            unitOfMeasurement: singleSelected.unitOfMeasurement,
+            name: singleSelected.name,
+            id: singleSelected.id
+          }}
+          productList={products}
+          measurements={MeasurementUnits}
         />
       </Grid>
     </Grid>
